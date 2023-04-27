@@ -3,6 +3,7 @@ import Image from 'next/image';
 import { useEffect, useState } from 'react';
 import Navbar from '@/components/Navbar';
 import PokemonCards from '@/components/PokemonCards';
+import Loading from '@/components/Loading';
 export default function Home() {
   const [pokemonList, setPokemonList] = useState([]);
   const [loading, setLoading] = useState(true);
@@ -24,7 +25,7 @@ export default function Home() {
     fetchData();
   }, []);
 
-  if (loading) return <h1>Loading....</h1>;
+  if (loading) return <Loading />;
 
   console.log(pokemonList[0].types);
   return (
