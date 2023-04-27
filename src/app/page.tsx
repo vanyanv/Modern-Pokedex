@@ -1,12 +1,10 @@
 'use client';
 import Image from 'next/image';
-import { Inter } from 'next/font/google';
 import { useEffect, useState } from 'react';
-
-const inter = Inter({ subsets: ['latin'] });
-
+import Navbar from '@/components/Navbar';
+import PokemonCards from '@/components/PokemonCards';
 export default function Home() {
-  const [pokemonList, setPokemonList] = useState(null);
+  const [pokemonList, setPokemonList] = useState([]);
   const [loading, setLoading] = useState(true);
 
   useEffect(() => {
@@ -27,14 +25,11 @@ export default function Home() {
   }, []);
 
   if (loading) return <h1>Loading....</h1>;
-  console.log(pokemonList);
+
+  console.log(pokemonList[0].types);
   return (
-    <div>
-      {/* {pokemonList.map((pokemon: object, index: number) => (
-        <div key={index}>
-          <h1>{pokemon.name}</h1>
-        </div>
-      ))} */}
+    <div className='min-h-full p-20'>
+      <PokemonCards pokemon={pokemonList} />
     </div>
   );
 }
