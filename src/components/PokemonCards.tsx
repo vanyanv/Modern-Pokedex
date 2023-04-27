@@ -1,26 +1,6 @@
 import { EnvelopeIcon, PhoneIcon } from '@heroicons/react/20/solid';
 import Image from 'next/image';
 
-const coloursTypes = {
-  normal: '#A8A77A',
-  fire: '#EE8130',
-  water: '#6390F0',
-  electric: '#F7D02C',
-  grass: '#7AC74C',
-  ice: '#96D9D6',
-  fighting: '#C22E28',
-  poison: '#A33EA1',
-  ground: '#E2BF65',
-  flying: '#A98FF3',
-  psychic: '#F95587',
-  bug: '#A6B91A',
-  rock: '#B6A136',
-  ghost: '#735797',
-  dragon: '#6F35FC',
-  dark: '#705746',
-  steel: '#B7B7CE',
-  fairy: '#D685AD',
-};
 export default function PokemonCards(props) {
   const pokemons = props.pokemon;
 
@@ -37,7 +17,7 @@ export default function PokemonCards(props) {
           <div className='flex flex-1 flex-col p-8'>
             <Image
               className='mx-auto h-32 w-32 flex-shrink-0 rounded-full'
-              src={pokemon.sprites.front_shiny}
+              src={pokemon.sprites.front_default}
               alt={pokemon.name}
               height={32}
               width={32}
@@ -53,7 +33,7 @@ export default function PokemonCards(props) {
                 {pokemon.types.map((type, index) => (
                   <span
                     key={index}
-                    className='m-2 inline-flex items-center rounded-full bg-green-50 px-2 py-1 text-xs font-medium text-green-700 ring-1 ring-inset ring-green-600/20'
+                    className={`m-2 inline-flex items-center rounded-full bg-${type.type.name} px-2 py-1 text-xs font-medium text-green-700 ring-1 ring-inset ring-green-600/20`}
                   >
                     {type.type.name}
                   </span>

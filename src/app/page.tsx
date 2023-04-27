@@ -13,7 +13,7 @@ export default function Home() {
         `https://pokeapi.co/api/v2/pokemon?limit=151`
       );
       const data = await response.json();
-      const promises = data.results.map((pokemon: object) => {
+      const promises = data.results.map((pokemon) => {
         return fetch(pokemon.url).then((res) => res.json());
       });
       Promise.all(promises).then((results) => {
