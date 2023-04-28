@@ -4,7 +4,11 @@ import { useEffect, useState } from 'react';
 import Navbar from '@/components/Navbar';
 import PokemonCards from '@/components/PokemonCards';
 import Loading from '@/components/Loading';
-export default function Home() {
+import PokemonPage from '@/components/PokemonPage';
+
+import { BrowserRouter, Routes, Route } from 'react-router-dom';
+
+export default function App() {
   const [pokemonList, setPokemonList] = useState([]);
   const [loading, setLoading] = useState(true);
 
@@ -27,10 +31,14 @@ export default function Home() {
 
   if (loading) return <Loading />;
 
-  console.log(pokemonList[0].types);
   return (
     <div className='min-h-full p-20'>
-      <PokemonCards pokemon={pokemonList} />
+      <BrowserRouter>
+        <Routes>
+          <Route path='/' element={<PokemonCards pokemon={pokemonList} />} />
+          <Route path='/:id' element={<PokemonPage pokemon={pokemonList} />} />
+        </Routes>
+      </BrowserRouter>
     </div>
   );
 }
