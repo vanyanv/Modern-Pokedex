@@ -4,7 +4,8 @@ export default function Loading() {
   return (
     <div className='flex flex-col h-screen w-full justify-center items-center'>
       <Image
-        className='animate-pulse'
+        priority={true}
+        className='animate-pulse '
         src={
           'https://upload.wikimedia.org/wikipedia/commons/9/98/International_Pok%C3%A9mon_logo.svg'
         }
