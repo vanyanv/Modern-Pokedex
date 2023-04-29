@@ -4,6 +4,7 @@ import Navbar from '@/components/Navbar';
 import PokemonCards from '@/components/PokemonCards';
 import Loading from '@/components/Loading';
 import PokemonPage from '@/components/PokemonPage';
+import HomeLayout from '@/components/layouts/HomeLayout';
 
 import { BrowserRouter, Routes, Route } from 'react-router-dom';
 
@@ -17,6 +18,8 @@ export default function App() {
         `https://pokeapi.co/api/v2/pokemon?limit=151`
       );
       const data = await response.json();
+      //the initial fetch request has links to other fetch requests
+      //mapping thur the initial data then fetching more pokemon data
       const promises = data.results.map((pokemon) => {
         return fetch(pokemon.url).then((res) => res.json());
       });
@@ -31,11 +34,16 @@ export default function App() {
   if (loading) return <Loading />;
 
   return (
-    <div className='min-h-full p-20'>
+    <div >
       <BrowserRouter>
         <Routes>
-          <Route path='/' element={<PokemonCards pokemon={pokemonList} />} />
-          <Route path='/:id' element={<PokemonPage pokemon={pokemonList} />} />
+          <Route path='/' element={<HomeLayout />}>
+            <Route index element={<PokemonCards pokemon={pokemonList} />} />
+            <Route
+              path='/:id'
+              element={<PokemonPage pokemon={pokemonList} />}
+            />
+          </Route>
         </Routes>
       </BrowserRouter>
     </div>
