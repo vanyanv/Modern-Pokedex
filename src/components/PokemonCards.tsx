@@ -7,7 +7,7 @@ export default function PokemonCards(props) {
   return (
     <ul
       role='list'
-      className='grid grid-cols-1 gap-6 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4'
+      className='p-10 grid grid-cols-1 gap-6 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4'
     >
       {pokemons.map((pokemon) => (
         <li
