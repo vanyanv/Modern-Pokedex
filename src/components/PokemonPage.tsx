@@ -120,13 +120,18 @@ export default function PokemonPage(props) {
     .toUpperCase()
     .concat(pokemon.name.slice(1));
   console.log(pokemon);
+  console.log(`/pokemonGif/0${pokemon.id}.gif`);
   return (
     <div className='bg-white mx-auto max-w-7xl sm:px-6 lg:px-8 rounded'>
       {/* Content goes here */}
 
       <Image
         className='mx-auto m-10'
-        src={`/pokemonGif/0${pokemon.id}.gif`}
+        src={
+          pokemonId < 100
+            ? `/pokemonGif/0${pokemon.id}.gif`
+            : `/pokemonGif/${pokemon.id}.gif`
+        }
         alt={pokemon.name}
         width={250}
         height={250}
