@@ -6,7 +6,7 @@ import Loading from '@/components/Loading';
 import PokemonPage from '@/components/PokemonPage';
 import HomeLayout from '@/components/layouts/HomeLayout';
 
-import { BrowserRouter, Routes, Route } from 'react-router-dom';
+import { HashRouter, Routes, Route } from 'react-router-dom';
 
 export default function App() {
   const [pokemonList, setPokemonList] = useState([]);
@@ -34,8 +34,8 @@ export default function App() {
   if (loading) return <Loading />;
 
   return (
-    <div >
-      <BrowserRouter>
+    <div>
+      <HashRouter>
         <Routes>
           <Route path='/' element={<HomeLayout />}>
             <Route index element={<PokemonCards pokemon={pokemonList} />} />
@@ -45,7 +45,7 @@ export default function App() {
             />
           </Route>
         </Routes>
-      </BrowserRouter>
+      </HashRouter>
     </div>
   );
 }
