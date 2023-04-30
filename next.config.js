@@ -4,7 +4,11 @@ const nextConfig = {
     appDir: true,
   },
   images: {
-    domains: ['raw.githubusercontent.com', 'giphy.com'],
+    domains: [
+      'raw.githubusercontent.com',
+      'projectpokemon.org',
+      'img.pokemondb.net',
+    ],
   },
 };
 
