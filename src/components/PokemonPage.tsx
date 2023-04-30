@@ -135,13 +135,15 @@ export default function PokemonPage(props) {
         alt={pokemon.name}
         width={250}
         height={250}
+        placeholder='blur'
+        blurDataURL={pokemon.sprites.front_default}
       />
       <h1 className='text-black text-center text-3xl font-medium'>{name}</h1>
       <dd className='mt-5 mb-1 flex justify-center'>
         {pokemon.types.map((type, index) => (
           <span
             key={index}
-            className={`m-2 inline-flex items-center rounded-full bg-${type.type.name} px-3 py-1 text-l font-medium text-green-700 ring-1 ring-inset ring-green-600/20`}
+            className={`m-2 inline-flex items-center rounded-full bg-${type.type.name} px-3 py-1 text-l font-medium text-white ring-1 ring-inset ring-${type.type.name}`}
           >
             {type.type.name}
           </span>

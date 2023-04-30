@@ -10,7 +10,7 @@ export default function PokemonCards(props) {
       {pokemons.map((pokemon) => (
         <li
           key={pokemon.id}
-          className='hover:font-bold col-span-1 flex flex-col divide-y divide-gray-200 rounded-lg bg-white text-center shadow hover:animate-pulse'
+          className='hover:font-bold col-span-1 flex flex-col divide-y divide-gray-200 rounded-lg bg-white text-center shadow hover:border'
         >
           <Link to={`/${pokemon.id}`}>
             <div className='flex flex-1 flex-col p-8'>
@@ -25,6 +25,8 @@ export default function PokemonCards(props) {
                 alt={pokemon.name}
                 height={50}
                 width={50}
+                placeholder='blur'
+                blurDataURL={pokemon.sprites.front_default}
               />
               <h3 className='mt-6 text-md  text-gray-900'>
                 {pokemon.name
@@ -34,13 +36,18 @@ export default function PokemonCards(props) {
               </h3>
               <dl className='mt-1 flex flex-grow flex-col justify-between'>
                 <dt className='sr-only'>Title</dt>
-                <dd className='text-sm text-gray-500'>Something</dd>
+                <dd className='text-sm text-gray-500'>
+                  Height: {pokemon.height}m
+                </dd>
+                <dd className='text-sm text-gray-500'>
+                  Weight: {pokemon.weight}kg
+                </dd>
                 <dt className='sr-only'>Role</dt>
                 <dd className='mt-3'>
                   {pokemon.types.map((type, index) => (
                     <span
                       key={index}
-                      className={`m-2 inline-flex items-center rounded-full bg-${type.type.name} px-2 py-1 text-xs font-medium text-green-700 ring-1 ring-inset ring-green-600/20`}
+                      className={`m-2 inline-flex items-center rounded-full bg-${type.type.name} px-2 py-1 text-xs font-medium text-white ring-1 ring-inset ring-${type.type.name}`}
                     >
                       {type.type.name}
                     </span>
