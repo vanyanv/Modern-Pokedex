@@ -38,4 +38,10 @@ module.exports = {
     require('@tailwindcss/typography'),
     require('@tailwindcss/aspect-ratio'),
   ],
+  safelist: [
+    {
+      pattern:
+        /(bg|text|border)-(normal|fire|water|electric|grass|ice|fighting|poison|ground|flying|psychic|rock|ghost|dragon|dark|steel|fairy|bug)/,
+    },
+  ],
 };
