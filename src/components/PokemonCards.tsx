@@ -1,6 +1,5 @@
 import Image from 'next/image';
 import { Link } from 'react-router-dom';
-
 export default function PokemonCards(props) {
   const pokemons = props.pokemon;
 
@@ -17,11 +16,12 @@ export default function PokemonCards(props) {
           <Link to={`/${pokemon.id}`}>
             <div className='flex flex-1 flex-col p-8'>
               <Image
-                className='mx-auto h-32 w-32 flex-shrink-0 rounded-full'
-                src={pokemon.sprites.front_default}
+                className='mx-auto h-20 w-auto flex-shrink-0'
+                // src={pokemon.sprites.front_default}
+                src={`/pokemonGif/0${pokemon.id}.gif`}
                 alt={pokemon.name}
-                height={32}
-                width={32}
+                height={50}
+                width={50}
               />
               <h3 className='mt-6 text-sm font-medium text-gray-900'>
                 {pokemon.name}

@@ -115,22 +115,24 @@ export default function PokemonPage(props) {
   const pokemonId = Number(id) - 1;
   const pokemonData = props.pokemon;
   const pokemon = pokemonData[pokemonId];
+  const name = pokemon.name
+    .slice(0, 1)
+    .toUpperCase()
+    .concat(pokemon.name.slice(1));
   console.log(pokemon);
   return (
     <div className='bg-white mx-auto max-w-7xl sm:px-6 lg:px-8 rounded'>
       {/* Content goes here */}
 
       <Image
-        className='mx-auto'
-        src={pokemon.sprites.front_default}
+        className='mx-auto m-10'
+        src={`/pokemonGif/0${pokemon.id}.gif`}
         alt={pokemon.name}
-        width={400}
-        height={400}
+        width={250}
+        height={250}
       />
-      <h1 className='text-black text-center text-xl font-medium'>
-        {pokemon.name}
-      </h1>
-      <dd className='mt-3 mb-1 flex justify-center'>
+      <h1 className='text-black text-center text-3xl font-medium'>{name}</h1>
+      <dd className='mt-5 mb-1 flex justify-center'>
         {pokemon.types.map((type, index) => (
           <span
             key={index}
