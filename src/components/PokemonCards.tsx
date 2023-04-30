@@ -40,10 +40,10 @@ export default function PokemonCards(props) {
               <dl className='mt-1 flex flex-grow flex-col justify-between'>
                 <dt className='sr-only'>Title</dt>
                 <dd className='text-sm text-gray-500'>
-                  Height: {pokemon.height}m
+                  Height: {(pokemon.height * 0.1).toFixed(1)}m
                 </dd>
                 <dd className='text-sm text-gray-500'>
-                  Weight: {pokemon.weight}kg
+                  Weight: {(pokemon.weight * 0.1).toFixed(1)}kg
                 </dd>
                 <dt className='sr-only'>Role</dt>
                 <dd className='mt-3'>
