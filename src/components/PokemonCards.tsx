@@ -1,7 +1,9 @@
 import Image from 'next/image';
 import { Link } from 'react-router-dom';
+
 export default function PokemonCards(props) {
   const pokemons = props.pokemon;
+
   return (
     <ul
       role='list'
@@ -17,11 +19,12 @@ export default function PokemonCards(props) {
               <Image
                 className='mx-auto h-20 w-auto flex-shrink-0'
                 // src={pokemon.sprites.front_default}
-                src={
-                  pokemon.id < 100
-                    ? `/pokemonGif/0${pokemon.id}.gif`
-                    : `/pokemonGif/${pokemon.id}.gif`
-                }
+                // src={
+                //   pokemon.id < 100
+                //     ? `/pokemonGif/0${pokemon.id}.gif`
+                //     : `/pokemonGif/${pokemon.id}.gif`
+                // }
+                src={`https://img.pokemondb.net/sprites/black-white/anim/normal/${pokemon.name}.gif`}
                 alt={pokemon.name}
                 height={50}
                 width={50}
@@ -37,10 +40,10 @@ export default function PokemonCards(props) {
               <dl className='mt-1 flex flex-grow flex-col justify-between'>
                 <dt className='sr-only'>Title</dt>
                 <dd className='text-sm text-gray-500'>
-                  Height: {pokemon.height}m
+                  Height: {(pokemon.height * 0.1).toFixed(1)}m
                 </dd>
                 <dd className='text-sm text-gray-500'>
-                  Weight: {pokemon.weight}kg
+                  Weight: {(pokemon.weight * 0.1).toFixed(1)}kg
                 </dd>
                 <dt className='sr-only'>Role</dt>
                 <dd className='mt-3'>
