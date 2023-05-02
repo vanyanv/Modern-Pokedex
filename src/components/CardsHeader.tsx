@@ -5,8 +5,8 @@ const tabs = [
   { name: 'Johto', href: '#', current: false, call: 'limit=100&offset=151' },
   { name: 'Hoenn', href: '#', current: false, call: 'limit=135&offset=251' },
   { name: 'Sinnoh', href: '#', current: false, call: 'limit=151&offset=386' },
-  { name: 'Unova', href: '#', current: false, call: 'limit=151&offset=537' },
-  { name: 'Kalos', href: '#', current: false, call: 'limit=151&offset=700' },
+  //   { name: 'Unova', href: '#', current: false, call: 'limit=151&offset=537' },
+  //   { name: 'Kalos', href: '#', current: false, call: 'limit=151&offset=700' },
 ];
 
 function classNames(...classes) {
