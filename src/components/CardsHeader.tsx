@@ -1,8 +1,12 @@
-import React from "react";
-
+import React from 'react';
+import { useContextApi } from '@/context/Context';
 const tabs = [
-  { name: 'Open', href: '#', current: true },
-  { name: 'Closed', href: '#', current: false },
+  { name: 'Kanto', href: '#', current: true },
+  { name: 'Johto', href: '#', current: false },
+  { name: 'Hoenn', href: '#', current: false },
+  { name: 'Sinnoh', href: '#', current: false },
+  { name: 'Unova', href: '#', current: false },
+  { name: 'Kalos', href: '#', current: false },
 ];
 
 function classNames(...classes) {
@@ -10,16 +14,18 @@ function classNames(...classes) {
 }
 
 export default function CardsHeader() {
+  const { toggleCall } = useContextApi();
   return (
-    <div className='border-b border-gray-200'>
+    <div className='p-3 border-b border-gray-100'>
       <div className='sm:flex sm:items-baseline'>
         <h3 className='text-base font-semibold leading-6 text-gray-900'>
-          Issues
+          Regions
         </h3>
         <div className='mt-4 sm:ml-10 sm:mt-0'>
           <nav className='-mb-px flex space-x-8'>
             {tabs.map((tab) => (
               <a
+                onClick={toggleCall}
                 key={tab.name}
                 href={tab.href}
                 className={classNames(

@@ -6,7 +6,7 @@ const PokemonCards = lazy(() => import('@/components/PokemonCards'));
 import HomeLayout from '@/components/layouts/HomeLayout';
 
 import { HashRouter, Routes, Route } from 'react-router-dom';
-
+import { ContextProvider, useContextApi } from '@/context/Context';
 export default function App() {
   const [pokemonList, setPokemonList] = useState([]);
   const [loading, setLoading] = useState(true);
@@ -34,17 +34,19 @@ export default function App() {
 
   return (
     <div>
-      <HashRouter>
-        <Routes>
-          <Route path='/' element={<HomeLayout />}>
-            <Route index element={<PokemonCards pokemon={pokemonList} />} />
-            <Route
-              path='/:id'
-              element={<PokemonPage pokemon={pokemonList} />}
-            />
-          </Route>
-        </Routes>
-      </HashRouter>
+      <ContextProvider>
+        <HashRouter>
+          <Routes>
+            <Route path='/' element={<HomeLayout />}>
+              <Route index element={<PokemonCards pokemon={pokemonList} />} />
+              <Route
+                path='/:id'
+                element={<PokemonPage pokemon={pokemonList} />}
+              />
+            </Route>
+          </Routes>
+        </HashRouter>
+      </ContextProvider>
     </div>
   );
 }
