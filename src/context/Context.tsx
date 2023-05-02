@@ -1,3 +1,4 @@
+'use client';
 import React, { createContext, useState, useContext } from 'react';
 
 //create context
@@ -5,10 +6,10 @@ const Context = createContext();
 
 //create a provider
 const ContextProvider = ({ children }) => {
-  const [call, setCall] = useState('?limit=151');
+  const [call, setCall] = useState('limit=151&offset=0');
 
-  const toggleCall = (data) => {
-    setCall('Not Hello');
+  const toggleCall = function (data) {
+    setCall(data);
     console.log(call);
   };
 

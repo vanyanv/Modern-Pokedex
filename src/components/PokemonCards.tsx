@@ -1,10 +1,11 @@
 import Image from 'next/image';
 import { Link } from 'react-router-dom';
 import CardsHeader from './CardsHeader';
-
+import Loading from './Loading';
 export default function PokemonCards(props) {
   const pokemons = props.pokemon;
 
+  if (!pokemons) return <Loading />;
   return (
     <>
       <CardsHeader />
@@ -12,12 +13,12 @@ export default function PokemonCards(props) {
         role='list'
         className='p-10 grid grid-cols-1 gap-6 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4'
       >
-        {pokemons.map((pokemon) => (
+        {pokemons.map((pokemon, index) => (
           <li
             key={pokemon.id}
             className='hover:font-bold col-span-1 flex flex-col divide-y divide-gray-200 rounded-lg bg-white text-center shadow hover:border'
           >
-            <Link to={`/${pokemon.id}`}>
+            <Link to={`/${index}`}>
               <div className='flex flex-1 flex-col p-8'>
                 <Image
                   className='mx-auto h-20 w-auto flex-shrink-0'

@@ -1,12 +1,12 @@
 import React from 'react';
 import { useContextApi } from '@/context/Context';
 const tabs = [
-  { name: 'Kanto', href: '#', current: true },
-  { name: 'Johto', href: '#', current: false },
-  { name: 'Hoenn', href: '#', current: false },
-  { name: 'Sinnoh', href: '#', current: false },
-  { name: 'Unova', href: '#', current: false },
-  { name: 'Kalos', href: '#', current: false },
+  { name: 'Kanto', href: '#', current: false, call: 'limit=151&offset=0' },
+  { name: 'Johto', href: '#', current: false, call: 'limit=100&offset=151' },
+  { name: 'Hoenn', href: '#', current: false, call: 'limit=135&offset=251' },
+  { name: 'Sinnoh', href: '#', current: false, call: 'limit=151&offset=386' },
+  { name: 'Unova', href: '#', current: false, call: 'limit=151&offset=537' },
+  { name: 'Kalos', href: '#', current: false, call: 'limit=151&offset=700' },
 ];
 
 function classNames(...classes) {
@@ -15,6 +15,8 @@ function classNames(...classes) {
 
 export default function CardsHeader() {
   const { toggleCall } = useContextApi();
+
+  const call = 'limit=100&offset=151';
   return (
     <div className='p-3 border-b border-gray-100'>
       <div className='sm:flex sm:items-baseline'>
@@ -25,7 +27,7 @@ export default function CardsHeader() {
           <nav className='-mb-px flex space-x-8'>
             {tabs.map((tab) => (
               <a
-                onClick={toggleCall}
+                onClick={() => toggleCall(tab.call)}
                 key={tab.name}
                 href={tab.href}
                 className={classNames(
