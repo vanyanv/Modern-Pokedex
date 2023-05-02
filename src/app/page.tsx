@@ -1,9 +1,8 @@
 'use client';
-import { useEffect, useState } from 'react';
-import Navbar from '@/components/Navbar';
-import PokemonCards from '@/components/PokemonCards';
+import { lazy, useEffect, useState } from 'react';
 import Loading from '@/components/Loading';
-import PokemonPage from '@/components/PokemonPage';
+const PokemonPage = lazy(() => import('../components/PokemonPage'));
+const PokemonCards = lazy(() => import('@/components/PokemonCards'));
 import HomeLayout from '@/components/layouts/HomeLayout';
 
 import { HashRouter, Routes, Route } from 'react-router-dom';
