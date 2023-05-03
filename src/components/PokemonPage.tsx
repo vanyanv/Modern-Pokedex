@@ -2,6 +2,8 @@
 import { useParams } from 'react-router-dom';
 import Image from 'next/image';
 import Stats from './Stats';
+import StatChart from './StatChart';
+import Loading from './Loading';
 export default function PokemonPage(props) {
   const { id } = useParams();
   const pokemonId = Number(id);
@@ -11,10 +13,6 @@ export default function PokemonPage(props) {
     .slice(0, 1)
     .toUpperCase()
     .concat(pokemon.name.slice(1));
-
-  // console.log(props);
-  // console.log(pokemonId);
-  // console.log(`/pokemonGif/0${pokemon?.id}.gif`);
   return (
     <div className='bg-white mx-auto max-w-7xl sm:px-6 lg:px-8 rounded'>
       {/* Content goes here */}
@@ -37,6 +35,7 @@ export default function PokemonPage(props) {
         ))}
       </dd>
       <Stats stats={pokemon.stats} />
+      <StatChart stats={pokemon.stats} />
     </div>
   );
 }

@@ -5,7 +5,7 @@ const PokemonPage = lazy(() => import('../components/PokemonPage'));
 const PokemonCards = lazy(() => import('@/components/PokemonCards'));
 import HomeLayout from '@/components/layouts/HomeLayout';
 
-import { HashRouter, Routes, Route } from 'react-router-dom';
+import { HashRouter, Routes, Route, BrowserRouter } from 'react-router-dom';
 import { useContextApi } from '@/context/Context';
 
 export default function App() {
