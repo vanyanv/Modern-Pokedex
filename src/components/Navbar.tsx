@@ -31,12 +31,12 @@ export default function Example() {
         <div className='hidden lg:flex lg:gap-x-12'>
           {navigation.map((item) => (
             <Link to={item.href} key={item.name} className='hover:underline'>
-              <a
+              <p
                 // href={item.href}
                 className='text-sm font-semibold leading-6 text-gray-900'
               >
                 {item.name}
-              </a>
+              </p>
             </Link>
           ))}
         </div>
