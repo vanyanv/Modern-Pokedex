@@ -1,1 +1,1 @@
-This is Pokedex for the first 151 Pokemon Build with NEXT.JS, React Router, TailwindCSS, Vercel
+This is the ModernPokedex Build with NEXT.JS, React Router, TailwindCSS, Chat.js and deployed on Vercel
