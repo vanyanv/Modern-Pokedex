@@ -1,8 +1,7 @@
-import { useState } from 'react';
+'use client';
 import { useParams } from 'react-router-dom';
 import Image from 'next/image';
 import Stats from './Stats';
-import Loading from './Loading';
 export default function PokemonPage(props) {
   const { id } = useParams();
   const pokemonId = Number(id);
@@ -13,16 +12,16 @@ export default function PokemonPage(props) {
     .toUpperCase()
     .concat(pokemon.name.slice(1));
 
-  console.log(props);
-  console.log(pokemonId);
-  console.log(`/pokemonGif/0${pokemon?.id}.gif`);
+  // console.log(props);
+  // console.log(pokemonId);
+  // console.log(`/pokemonGif/0${pokemon?.id}.gif`);
   return (
     <div className='bg-white mx-auto max-w-7xl sm:px-6 lg:px-8 rounded'>
       {/* Content goes here */}
       <Image
         className='mx-auto m-10'
         src={`https://img.pokemondb.net/sprites/black-white/anim/normal/${pokemon.name}.gif`}
-        alt={pokemon?.name}
+        alt={pokemon.name}
         width={200}
         height={200}
       />
@@ -37,7 +36,7 @@ export default function PokemonPage(props) {
           </span>
         ))}
       </dd>
-      <Stats stats={pokemon?.stats} />
+      <Stats stats={pokemon.stats} />
     </div>
   );
 }

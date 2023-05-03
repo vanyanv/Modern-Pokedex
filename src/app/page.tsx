@@ -7,12 +7,12 @@ import HomeLayout from '@/components/layouts/HomeLayout';
 
 import { HashRouter, Routes, Route } from 'react-router-dom';
 import { useContextApi } from '@/context/Context';
+
 export default function App() {
   const [pokemonList, setPokemonList] = useState([]);
   const [loading, setLoading] = useState(true);
   //this is coming from context changes api call for each region
   const { call } = useContextApi();
-  console.log(pokemonList);
   useEffect(() => {
     async function fetchData() {
       const response = await fetch(`https://pokeapi.co/api/v2/pokemon?${call}`);
@@ -30,7 +30,7 @@ export default function App() {
     fetchData();
   }, [call]);
 
-  if (!pokemonList) return <Loading />;
+  if (loading) return <Loading />;
 
   return (
     <div>
