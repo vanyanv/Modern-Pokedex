@@ -1,1 +1,1 @@
-This is the ModernPokedex Build with NEXT.JS, React Router, TailwindCSS, Chat.js and deployed on Vercel
+This is the ModernPokedex Built with NEXT.JS, React Router, Context, TailwindCSS, Chat.js and deployed on Vercel
