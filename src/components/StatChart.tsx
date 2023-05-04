@@ -54,22 +54,16 @@ export default function StatChart(props) {
       },
     ],
   };
-  const options = {
-    indexAxis: 'y',
 
+  const options = {
+    display: true,
     scales: {
-      x: {
-        max: 150,
+      y: {
+        max: Math.max(...data),
         min: 1,
       },
     },
   };
 
-  return (
-    <div className='rounded-lg pt-4 bg-gray-50'>
-      <div className='pb-10'>
-        <Bar data={data2} options={options} />
-      </div>
-    </div>
-  );
+  return <Bar className='p-10' data={data2} options={options} />;
 }

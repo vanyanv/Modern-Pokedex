@@ -34,8 +34,10 @@ export default function PokemonPage(props) {
           </span>
         ))}
       </dd>
-      <StatChart stats={pokemon.stats} />
-      <Stats stats={pokemon.stats} />
+      <div>
+        <StatChart stats={pokemon.stats} />
+        <Stats stats={pokemon.stats} />
+      </div>
     </div>
   );
 }
