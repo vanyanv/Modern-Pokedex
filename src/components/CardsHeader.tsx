@@ -1,5 +1,6 @@
 import React from 'react';
 import { useContextApi } from '@/context/Context';
+import { NavLink } from 'react-router-dom';
 const tabs = [
   { name: 'Kanto', href: '#', current: false, call: 'limit=151&offset=0' },
   { name: 'Johto', href: '#', current: false, call: 'limit=100&offset=151' },
@@ -8,10 +9,6 @@ const tabs = [
   //   { name: 'Unova', href: '#', current: false, call: 'limit=151&offset=537' },
   //   { name: 'Kalos', href: '#', current: false, call: 'limit=151&offset=700' },
 ];
-
-function classNames(...classes) {
-  return classes.filter(Boolean).join(' ');
-}
 
 export default function CardsHeader() {
   const { toggleCall } = useContextApi();
@@ -28,14 +25,7 @@ export default function CardsHeader() {
               <a
                 onClick={() => toggleCall(tab.call)}
                 key={tab.name}
-                href={tab.href}
-                className={classNames(
-                  tab.current
-                    ? 'border-indigo-500 text-indigo-600'
-                    : 'border-transparent text-gray-500 hover:border-gray-300 hover:text-gray-700',
-                  'whitespace-nowrap border-b-2 px-1 pb-4 text-sm font-medium'
-                )}
-                aria-current={tab.current ? 'page' : undefined}
+                className='cursor-pointer border-transparent text-gray-500 hover:border-gray-300 hover:text-gray-700 whitespace-nowrap border-b-2 px-1 pb-4 text-sm font-medium'
               >
                 {tab.name}
               </a>
