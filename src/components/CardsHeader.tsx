@@ -16,7 +16,6 @@ function classNames(...classes) {
 export default function CardsHeader() {
   const { toggleCall } = useContextApi();
 
-  const call = 'limit=100&offset=151';
   return (
     <div className='p-3 border-b border-gray-100'>
       <div className='sm:flex sm:items-baseline'>

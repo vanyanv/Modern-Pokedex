@@ -15,7 +15,7 @@ const Context = createContext<ContextValue | undefined>(undefined);
 
 // create a provider
 const ContextProvider = ({ children }: ContextProviderProps) => {
-  const [call, setCall] = useState('');
+  const [call, setCall] = useState('limit=151&offset=0');
 
   const toggleCall = function (data: string) {
     setCall(data);

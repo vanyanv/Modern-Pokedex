@@ -13,20 +13,20 @@ export default function App() {
   const [loading, setLoading] = useState(true);
   //this is coming from context changes api call for each region
   const { call } = useContextApi();
+  async function fetchData() {
+    const response = await fetch(`https://pokeapi.co/api/v2/pokemon?${call}`);
+    const data = await response.json();
+    //the initial fetch request has links to other fetch requests
+    //mapping thur the initial data then fetching more pokemon data
+    const promises = data.results.map((pokemon) => {
+      return fetch(pokemon.url).then((res) => res.json());
+    });
+    Promise.all(promises).then((results) => {
+      setPokemonList(results);
+      setLoading(false);
+    });
+  }
   useEffect(() => {
-    async function fetchData() {
-      const response = await fetch(`https://pokeapi.co/api/v2/pokemon?${call}`);
-      const data = await response.json();
-      //the initial fetch request has links to other fetch requests
-      //mapping thur the initial data then fetching more pokemon data
-      const promises = data.results.map((pokemon) => {
-        return fetch(pokemon.url).then((res) => res.json());
-      });
-      Promise.all(promises).then((results) => {
-        setPokemonList(results);
-        setLoading(false);
-      });
-    }
     fetchData();
   }, [call]);
 
