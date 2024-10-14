@@ -1,4 +1,4 @@
-# Modern Pokedex - Explore Your Favorite Pokémon
+# Modern Pokedex - Explore Your Favorite Pokémon Web APP
 
 
 Welcome to the repository of my Modern Pokedex website, [modernpokedex.vercel.app](https://modernpokedex.vercel.app). This website showcases my skills in utilizing APIs, proficiency in React and Next.js, and the ability to create visually appealing user interfaces.
