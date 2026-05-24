@@ -1,0 +1,332 @@
+# WoW Retail Injection Bot — MVP Implementation Plan
+
+A low-level, internal injection bot for World of Warcraft Retail (current patch, 64-bit, Windows). Inspired by Project Sylvanas's architecture but built from scratch using open-source references (BloogBot, AmeisenBotX, OwnedCore resources).
+
+## User Review Required
+
+> [!IMPORTANT]
+> **Retail = Warden.** Blizzard's anti-cheat actively scans memory, detects known injection signatures, and monitors for hooked functions. For MVP, we'll use manual DLL mapping (avoids `LoadLibrary` detection) and basic signature obfuscation. Production-grade evasion (kernel driver, hypervisor-level hiding) is Phase 2.
+
+> [!WARNING]
+> **Offsets change every patch.** We're using **pattern scanning** (byte signature search) instead of hardcoded offsets. This means the bot survives minor patches automatically. Major patches (expansion launches, engine changes) may require updated signatures.
+
+> [!IMPORTANT]
+> **Language: C++** across the board. Injecting a .NET runtime into WoW is a massive detection vector. C++ gives us direct memory access, minimal footprint, and full control over what code lives in WoW's process space.
+
+## Open Questions
+
+> [!IMPORTANT]
+> **DX11 or DX12?** WoW Retail supports both. DX11 hooking is far more documented and straightforward (hook `IDXGISwapChain::Present` via vtable). DX12 hooking is trickier but DX12 is WoW's default now. **Recommendation:** Target DX11 first (player can launch WoW with `-d3d11`), add DX12 support in Phase 2.
+
+> [!IMPORTANT]
+> **What should MVP actually DO?** Here's what I'm proposing for the minimum working tool:
+> 1. Successfully inject into WoW Retail (64-bit)
+> 2. Hook DX11 Present for main-thread execution
+> 3. Read game state: player position, health, mana, target info, nearby objects
+> 4. Display an ImGui overlay inside WoW showing this info (ESP-style)
+> 5. Basic combat rotation — auto-cast spells based on simple conditions
+>
+> Is that the right scope, or do you want more/less for v1?
+
+## Proposed Architecture
+
+```
+┌──────────────────────────────────────────────────┐
+│                   injector.exe                    │
+│  (standalone app — manual maps DLL into WoW.exe) │
+└──────────────┬───────────────────────────────────┘
+               │ Manual DLL Mapping
+               ▼
+┌──────────────────────────────────────────────────┐
+│              core.dll (inside WoW.exe)           │
+│                                                  │
+│  ┌─────────────┐  ┌──────────────────────────┐   │
+│  │  DX11 Hook  │  │   Pattern Scanner        │   │
+│  │  (Present)  │  │   (finds offsets at       │   │
+│  │             │  │    runtime via sigs)      │   │
+│  └──────┬──────┘  └───────────┬──────────────┘   │
+│         │                     │                  │
+│         ▼                     ▼                  │
+│  ┌─────────────┐  ┌──────────────────────────┐   │
+│  │   ImGui     │  │   Object Manager         │   │
+│  │  Overlay    │  │   (traverse WoW's        │   │
+│  │  (in-game   │  │    internal object list)  │   │
+│  │   UI/ESP)   │  │                          │   │
+│  └─────────────┘  └───────────┬──────────────┘   │
+│                               │                  │
+│                    ┌──────────┴──────────┐       │
+│                    │                     │       │
+│              ┌─────▼─────┐        ┌──────▼────┐  │
+│              │  Player   │        │   Units   │  │
+│              │  State    │        │   NPCs    │  │
+│              │  Reader   │        │   Objects │  │
+│              └─────┬─────┘        └───────────┘  │
+│                    │                             │
+│              ┌─────▼──────────────────────┐      │
+│              │   Bot Controller           │      │
+│              │   (combat rotation,        │      │
+│              │    movement, automation)   │      │
+│              └────────────────────────────┘      │
+└──────────────────────────────────────────────────┘
+```
+
+## Proposed Changes
+
+### Project Structure
+
+```
+wow-injection-bot/
+├── CMakeLists.txt                 # Root CMake
+├── README.md
+│
+├── injector/                      # Standalone injector exe
+│   ├── CMakeLists.txt
+│   └── src/
+│       ├── main.cpp               # Entry point
+│       ├── manual_map.h           # Manual DLL mapping
+│       └── manual_map.cpp         # PE parsing, section mapping, relocs, imports
+│
+├── core/                          # Injected DLL (lives inside WoW.exe)
+│   ├── CMakeLists.txt
+│   └── src/
+│       ├── dllmain.cpp            # DLL entry, init hooks + scanner
+│       │
+│       ├── hooks/
+│       │   ├── dx11_hook.h
+│       │   ├── dx11_hook.cpp      # Hook IDXGISwapChain::Present via vtable
+│       │   ├── input_hook.h
+│       │   └── input_hook.cpp     # Hook WndProc for ImGui input
+│       │
+│       ├── memory/
+│       │   ├── pattern_scanner.h
+│       │   ├── pattern_scanner.cpp # Scan WoW's .text/.data for byte sigs
+│       │   ├── offsets.h           # Resolved offset storage
+│       │   └── mem_utils.h        # Read/write helpers, pointer chains
+│       │
+│       ├── game/
+│       │   ├── object_manager.h
+│       │   ├── object_manager.cpp  # Traverse WoW's object linked list
+│       │   ├── game_object.h       # Base game object (GUID, type, pos)
+│       │   ├── unit.h              # Unit (health, mana, buffs, casting)
+│       │   ├── unit.cpp
+│       │   ├── player.h            # Local player specifics
+│       │   ├── player.cpp
+│       │   ├── spell.h             # Spell info structures
+│       │   └── enums.h             # Object types, unit flags, etc.
+│       │
+│       ├── bot/
+│       │   ├── bot_controller.h
+│       │   ├── bot_controller.cpp  # Main bot tick loop (runs on Present hook)
+│       │   ├── rotation.h          # Combat rotation interface
+│       │   └── rotation.cpp        # Simple priority-based rotation
+│       │
+│       └── overlay/
+│           ├── overlay.h
+│           ├── overlay.cpp         # ImGui init/render, ESP drawing
+│           └── menu.cpp            # Settings menu (toggle bot, show ESP)
+│
+├── libs/                          # Third-party dependencies
+│   ├── minhook/                   # Function hooking (TsudaKageworked MinHook)
+│   ├── imgui/                     # Dear ImGui (overlay UI)
+│   └── spdlog/                    # Logging
+│
+└── signatures/
+    └── retail_sigs.h              # Byte patterns for current retail build
+```
+
+---
+
+### Component 1: Injector (`injector/`)
+
+The standalone Windows application that maps our DLL into WoW's process.
+
+#### [NEW] [main.cpp](file:///Users/vardanvanyan/.gemini/antigravity/scratch/wow-injection-bot/injector/src/main.cpp)
+- Find WoW process by name (`Wow.exe`)
+- Open process handle with `PROCESS_ALL_ACCESS`
+- Call manual mapper to inject `core.dll`
+
+#### [NEW] [manual_map.h](file:///Users/vardanvanyan/.gemini/antigravity/scratch/wow-injection-bot/injector/src/manual_map.h) / [manual_map.cpp](file:///Users/vardanvanyan/.gemini/antigravity/scratch/wow-injection-bot/injector/src/manual_map.cpp)
+- **Why manual mapping?** `LoadLibrary` injection is trivially detected by Warden. Manual mapping:
+  - Reads the DLL file from disk
+  - Allocates memory in target process via `VirtualAllocEx`
+  - Maps PE sections (headers, .text, .data, .rdata, etc.)
+  - Resolves imports (walks IAT, resolves function addresses)
+  - Processes relocations (fixes base address delta)
+  - Executes TLS callbacks
+  - Calls `DllMain` via `CreateRemoteThread` pointing to mapped entry
+  - Erases PE headers from mapped memory (anti-forensics)
+- Result: Our DLL exists in WoW's memory without appearing in the module list
+
+---
+
+### Component 2: DX11 Hook (`core/src/hooks/`)
+
+#### [NEW] [dx11_hook.cpp](file:///Users/vardanvanyan/.gemini/antigravity/scratch/wow-injection-bot/core/src/hooks/dx11_hook.cpp)
+- **Method:** Create a temporary D3D11 device + swap chain to get the vtable address of `IDXGISwapChain::Present`
+- Hook `Present` (index 8 in DXGI vtable) using MinHook
+- Our hooked `Present` runs every frame on WoW's main thread — this is where we:
+  - Initialize ImGui (first frame)
+  - Run the bot controller tick
+  - Render the overlay
+- Clean teardown on unload (unhook, restore original vtable)
+
+#### [NEW] [input_hook.cpp](file:///Users/vardanvanyan/.gemini/antigravity/scratch/wow-injection-bot/core/src/hooks/input_hook.cpp)
+- Hook WoW's `WndProc` to intercept keyboard/mouse input for ImGui
+- Toggle overlay visibility with a hotkey (e.g., `INSERT`)
+- When overlay is visible, ImGui captures input; otherwise pass-through to WoW
+
+---
+
+### Component 3: Pattern Scanner (`core/src/memory/`)
+
+#### [NEW] [pattern_scanner.cpp](file:///Users/vardanvanyan/.gemini/antigravity/scratch/wow-injection-bot/core/src/memory/pattern_scanner.cpp)
+- Scans WoW's loaded modules for byte patterns (signatures)
+- Supports wildcards (`??` for variable bytes)
+- Example: finding Object Manager base pointer by scanning for the instruction sequence that references it
+- Returns resolved addresses that we store in the offsets table
+- Runs once at initialization
+
+#### [NEW] [offsets.h](file:///Users/vardanvanyan/.gemini/antigravity/scratch/wow-injection-bot/core/src/memory/offsets.h)
+- Struct holding all resolved runtime addresses:
+  - `ObjectManagerBase`
+  - `LocalPlayerGUID`
+  - `PlayerNameCache`
+  - `SpellBook` / `CooldownTable`
+  - `ClickToMove` / `FaceDirection` function pointers
+- Populated by pattern scanner at startup
+
+#### [NEW] [retail_sigs.h](file:///Users/vardanvanyan/.gemini/antigravity/scratch/wow-injection-bot/signatures/retail_sigs.h)
+- Byte patterns for current retail build
+- Format: `"\x48\x8B\x05\x00\x00\x00\x00\x48\x85\xC0\x74"` with mask `"xxx????xxxx"`
+- These need updating when major patches change the code flow
+- Sourced from community (OwnedCore offset dumps, IDA analysis)
+
+---
+
+### Component 4: Object Manager & Game State (`core/src/game/`)
+
+#### [NEW] [object_manager.cpp](file:///Users/vardanvanyan/.gemini/antigravity/scratch/wow-injection-bot/core/src/game/object_manager.cpp)
+- WoW maintains an internal linked list / hash map of all game objects
+- We find the base pointer via pattern scan, then walk the structure:
+  ```
+  ObjectManager -> FirstObject -> NextObject -> NextObject -> ...
+  ```
+- Each object has a type field (Player, Unit, GameObject, DynamicObject, etc.)
+- Extract and cache: GUID, type, position (X/Y/Z), rotation
+- Refresh every frame (called from Present hook)
+
+#### [NEW] [unit.cpp](file:///Users/vardanvanyan/.gemini/antigravity/scratch/wow-injection-bot/core/src/game/unit.cpp) / [player.cpp](file:///Users/vardanvanyan/.gemini/antigravity/scratch/wow-injection-bot/core/src/game/player.cpp)
+- Read unit descriptors: health, max health, mana, max mana, level, faction
+- Read buff/debuff arrays
+- Read casting state (spell ID, cast time remaining)
+- For local player: read specialization, action bar bindings, spell cooldowns
+- Positions read from the movement info structure
+
+---
+
+### Component 5: Bot Controller (`core/src/bot/`)
+
+#### [NEW] [bot_controller.cpp](file:///Users/vardanvanyan/.gemini/antigravity/scratch/wow-injection-bot/core/src/bot/bot_controller.cpp)
+- Main tick function called every frame from Present hook
+- Checks bot state (enabled/disabled via overlay toggle)
+- Reads current player + target state from Object Manager
+- Calls rotation logic
+- Sends input to WoW (simulated keypresses via `SendInput` or direct Lua execution)
+
+#### [NEW] [rotation.cpp](file:///Users/vardanvanyan/.gemini/antigravity/scratch/wow-injection-bot/core/src/bot/rotation.cpp)
+- Simple priority-based combat rotation for MVP
+- Configurable spell priority list (read from overlay menu)
+- Checks: is spell ready? is target in range? do I have enough resources?
+- Executes spells via key simulation (maps spells to keybinds)
+- MVP: support one spec/class, hardcoded rotation with configurable toggles
+
+---
+
+### Component 6: ImGui Overlay (`core/src/overlay/`)
+
+#### [NEW] [overlay.cpp](file:///Users/vardanvanyan/.gemini/antigravity/scratch/wow-injection-bot/core/src/overlay/overlay.cpp)
+- Initialize Dear ImGui with the DX11 device/context from our Present hook
+- Render each frame after WoW's own rendering
+- **ESP panel:** show nearby units with health bars, distance, casting info
+- **Player panel:** local player stats, position, target info
+- **Bot controls:** enable/disable, select rotation, configure spell priorities
+- **Log window:** scrollable log of bot actions
+
+#### [NEW] [menu.cpp](file:///Users/vardanvanyan/.gemini/antigravity/scratch/wow-injection-bot/core/src/overlay/menu.cpp)
+- ImGui-based settings menu
+- Toggle ESP, toggle bot, keybind configuration
+- Class/spec selector for rotation
+- Debug info (resolved offsets, frame time, object count)
+
+---
+
+### Dependencies (vendored in `libs/`)
+
+| Library | Purpose | Source |
+|---------|---------|--------|
+| **MinHook** | x64 function hooking (detour + trampoline) | [github.com/TsudaKageworked/minhook](https://github.com/TsudaKageworked/minhook) |
+| **Dear ImGui** | In-game overlay UI | [github.com/ocornut/imgui](https://github.com/ocornut/imgui) — DX11 backend |
+| **spdlog** | Fast logging (file + console) | [github.com/gabime/spdlog](https://github.com/gabime/spdlog) |
+
+---
+
+## Build System
+
+- **CMake** (3.20+) with MSVC toolchain (Visual Studio 2022)
+- Two build targets:
+  - `injector.exe` — console app (Release x64)
+  - `core.dll` — 64-bit DLL (Release x64, no CRT if possible for stealth)
+- Build command: `cmake --build . --config Release`
+
+---
+
+## Development & Debugging Workflow
+
+1. **Finding signatures:** Use IDA Pro or x64dbg + Cheat Engine on WoW.exe to find the byte patterns for ObjectManager, player base, etc. OwnedCore's offset sharing threads are invaluable here.
+2. **Testing injection:** Launch WoW in DX11 mode (`-d3d11` launch flag), run injector, verify overlay appears.
+3. **Iterating:** The DLL has an unload hotkey (e.g., `END`) that cleanly unhooks everything and frees memory, so you can re-inject without restarting WoW.
+
+---
+
+## Phases
+
+### Phase 1 — MVP (This Plan) ✅
+- Manual DLL mapping injector
+- DX11 Present hook
+- Pattern scanner + core offsets
+- Object Manager traversal
+- ImGui overlay (ESP + player info)
+- Basic combat rotation (one class)
+- Hotkey toggle (INSERT = menu, END = unload)
+
+### Phase 2 — Expansion (Future)
+- DX12 support
+- Navigation/pathfinding (Recast & Detour)
+- Lua execution engine (call protected functions)
+- Multi-class rotation support
+- Profile system (save/load configurations)
+- Advanced Warden evasion (syscall hooking, memory cloaking)
+
+### Phase 3 — Full Bot (Future)
+- Automated grinding/questing
+- Auction house automation
+- Plugin system (Lua or scripted behaviors)
+- Kernel driver for injection (ring-0)
+
+---
+
+## Verification Plan
+
+### Automated Tests
+- Build verification: `cmake --build . --config Release` compiles both targets without errors
+- Pattern scanner unit tests against known byte sequences
+- Object structure size/alignment assertions
+
+### Manual Verification
+- Launch WoW Retail in DX11 mode
+- Run `injector.exe` — verify DLL is mapped (no crash, no Warden flag)
+- Press `INSERT` — ImGui overlay appears in-game
+- Verify player position, health, target info displayed correctly
+- Enable combat rotation — verify spell casts fire on correct conditions
+- Press `END` — clean unload without crash
+- Re-inject — verify stable re-injection
